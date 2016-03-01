@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import sys
-from route import apiserver
+from route import start_server
 
 
 if __name__ == "__main__":
@@ -9,7 +9,7 @@ if __name__ == "__main__":
         exit()
 
     if len(sys.argv) == 1:
-        apiserver()
+        start_server()
     else:
-        apiserver(sys.argv[1], sys.argv[2])
+        start_server(sys.argv[1], sys.argv[2])
 
