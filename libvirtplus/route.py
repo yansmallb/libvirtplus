@@ -42,9 +42,9 @@ class Container(Resource):
         logger.debug('Container xml is {xml}'.format(xml=xml))
         return handler.updateContainer(xml, container_id)
 
-    def post(self):
-        logger.info('Post container, do nothing')
-        return "please use post with url: /containers "
+    def post(self, container_id):
+        logger.info('Post container {container_id}, do nothing.'.format(container_id=container_id))
+        return "please use post with url: /containers or use put with url: /containers/<container_id>"
 
     def delete(self, container_id):
         logger.info('Delete container {container_id}'.format(container_id=container_id))

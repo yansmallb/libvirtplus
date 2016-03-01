@@ -21,11 +21,11 @@ if __name__ == "__main__":
     print r.text
 
     if 1:
-        r = requests.get(url+'containers/192.168.11.51_8')
+        r = requests.get(url+'containers/192.168.11.51_11')
         print r.text
 
-        #r = requests.delete(url+'containers/192.168.11.51_8')
-        #print r.text
+        r = requests.post(url+'containers/192.168.11.51_11', data=json_kvm)
+        print r.text
     else:
         r = requests.post(url+'containers', data=json_kvm)
         print r.text
