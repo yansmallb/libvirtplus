@@ -3,6 +3,7 @@ from flask import Flask, request
 from flask.ext.restful import Api, Resource
 import handler
 import plugin
+from log import logger
 
 app = Flask(__name__)
 api = Api(app)
@@ -15,33 +16,46 @@ class Home(Resource):
 
 class Containers(Resource):
     def get(self):
-        return handler.getAllContainersID()
+        logger.info('Get containers ID list')
+        list = handler.getAllContainersID()
+        logger.info(list)
+        return list
 
     def post(self):
+        logger.info('Create container')
         xml = request_to_xml(request)
-        return handler.createContainer(xml)
+        logger.debug('Container xml is {xml}'.format(xml=xml))
+        strID = handler.createContainer(xml)
+        logger.info('Created success,ID is {strID}'.format(strID=strID))
+        return strID
 
 
 class Container(Resource):
     def get(self, container_id):
+        logger.info('Get container {container_id}'.format(container_id=container_id))
         rtn = handler.getContainerInfoByID(container_id)
         return rtn
 
     def put(self, container_id):
+        logger.info('Update container {container_id}'.format(container_id=container_id))
         xml = request_to_xml(request)
+        logger.debug('Container xml is {xml}'.format(xml=xml))
         return handler.updateContainer(xml, container_id)
 
     def post(self):
+        logger.info('Post container, do nothing')
         return "please use post with url: /containers "
 
     def delete(self, container_id):
+        logger.info('Delete container {container_id}'.format(container_id=container_id))
         return handler.deleteContainerByID(container_id)
 
 
 def start_server(host='127.0.0.1', port='2376'):
+    logger.info('Start libvirtplus server in:{host}:{port}'.format(host=host, port=port))
     registry()
-    #app.run(host=host, port=port)
-    app.run(host=host, port=port, debug=True, use_reloader=False)
+    app.run(host=host, port=port)
+    #app.run(host=host, port=port, debug=True, use_reloader=False)
 
 
 def registry():

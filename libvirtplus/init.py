@@ -5,7 +5,7 @@ from route import start_server
 
 if __name__ == "__main__":
     if len(sys.argv) < 3 and len(sys.argv) != 1:
-        print "libvirtplus: host port"
+        print "libvirtplus [host] [port]"
         exit()
 
     if len(sys.argv) == 1:
