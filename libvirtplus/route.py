@@ -17,17 +17,15 @@ class Home(Resource):
 class Containers(Resource):
     def get(self):
         logger.info('Get containers ID list')
-        list = handler.getAllContainersID()
-        logger.info(list)
-        return list
+        id_list = handler.getAllContainersID()
+        logger.info(id_list)
+        return id_list
 
     def post(self):
         logger.info('Create container')
-        xml = request_to_xml(request)
-        logger.debug('Container xml is {xml}'.format(xml=xml))
-        strID = handler.createContainer(xml)
-        logger.info('Created success,ID is {strID}'.format(strID=strID))
-        return strID
+        dicts = plugin.json_to_dict(request.data)
+        id = handler.createContainer(dicts)
+        return {'id': id}
 
 
 class Container(Resource):
@@ -38,9 +36,9 @@ class Container(Resource):
 
     def put(self, container_id):
         logger.info('Update container {container_id}'.format(container_id=container_id))
-        xml = request_to_xml(request)
-        logger.debug('Container xml is {xml}'.format(xml=xml))
-        return handler.updateContainer(xml, container_id)
+        dicts = plugin.json_to_dict(request.data)
+        str_id = handler.updateContainer(dicts, container_id)
+        return str_id
 
     def post(self, container_id):
         logger.info('Post container {container_id}, do nothing.'.format(container_id=container_id))
@@ -64,10 +62,12 @@ def registry():
     api.add_resource(Container, '/containers/<string:container_id>', endpoint='container')
 
 
-def request_to_xml(request):
-    dicts = {'name': request.form.get('name'), 'memory': request.form.get('memory'),
-             'cdrom_source': request.form.get('cdrom_source'), 'disk_source': request.form.get('disk_source'),
-             'vcpu': request.form.get('vcpu'), 'boot': request.form.get('boot')}
+# not used
+def request_to_dicts(request):
+    dicts = plugin.json_to_dict(request.data)
     if dicts['name'] is None:
-        dicts = plugin.json_to_dict(request.data)
-    return plugin.dict_to_xml(dicts)
+        dicts = {'name': request.form.get('name'), 'memory': request.form.get('memory'),
+             'cdrom_source': request.form.get('cdrom_source'), 'disk_source': request.form.get('disk_source'),
+             'vcpu': request.form.get('vcpu'), 'boot': request.form.get('boot'),
+             'bridge': request.form.get('bridge'), 'ContainerConfig': request.form.get('ContainerConfig')}
+    return dicts

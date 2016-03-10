@@ -10,10 +10,19 @@ import xml.dom.minidom
 
 
 def get_ip_address(if_name):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    net = fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', if_name[:15]))
-    ret = socket.inet_ntoa(net[20:24])
-    return ret
+    f = os.popen("ifconfig -s|grep -v Iface|grep -v lo|awk '{print $1}'")
+    interface = f.readlines()
+    f.close()
+    if if_name in interface:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        net = fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', if_name[:15]))
+        ret = socket.inet_ntoa(net[20:24])
+        return ret
+    else:
+        ips = os.popen("LANG=C ifconfig | grep \"inet addr\" | grep -v \"192.168.11.*\" | awk -F \":\" '{print $2}' | awk '{print $1}'").readlines()
+        if len(ips) > 0:
+            return ips[0]
+    return ''
 
 
 def int_to_str_id(id):
@@ -71,5 +80,7 @@ def dict_to_xml(dicts):
             source.setAttribute("bridge",v)
             continue
 
-        doc.getElementsByTagName(k)[0].childNodes[0].nodeValue = v
+        elements = doc.getElementsByTagName(k)
+        if elements.length != 0:
+            doc.getElementsByTagName(k)[0].childNodes[0].nodeValue = v
     return doc.toxml()
